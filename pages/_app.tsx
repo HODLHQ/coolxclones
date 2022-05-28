@@ -10,7 +10,16 @@ const colors = {
   }
 }
 
-const theme = extendTheme({ colors })
+const styles = {
+  global: {
+    body: {
+      bg: '#214080',
+      color: 'white'
+    }
+  }
+}
+
+const theme = extendTheme({ colors, styles })
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
