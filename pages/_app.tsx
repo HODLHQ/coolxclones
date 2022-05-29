@@ -1,5 +1,5 @@
 import '@fontsource/pangolin/400.css'
-import { background, ChakraProvider, extendTheme } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import type { AppProps } from 'next/app'
 
 const theme = extendTheme({
@@ -27,12 +27,16 @@ const theme = extendTheme({
         fontWeight: 'normal',
         textTransform: 'uppercase',
         background: '#0097ff',
-        color: 'white'
+        color: 'white',
+        _hover: {
+          background: 'white',
+          color: '#0097ff'
+        }
       },
       sizes: {
         xl: {
-          fontSize: '6rem',
-          lineHeight: '6rem',
+          fontSize: '4rem',
+          lineHeight: '4rem',
           px: 1,
           py: 1
         }

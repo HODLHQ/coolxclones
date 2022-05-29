@@ -31,6 +31,7 @@ const Home: NextPage = () => {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>()
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>()
   const [address, setAddress] = useState('')
+  const [displayAddress, setDisplayAddress] = useState('')
   const [ens, setEns] = useState('')
   const [isMainnet, setIsMainnet] = useState(false)
   const [isTestnet, setIsTestnet] = useState(false)
@@ -156,6 +157,12 @@ const Home: NextPage = () => {
     setTotalPrice(total.toFixed(1))
   }, [desiredQuantity])
 
+  useEffect(() => {
+    if (address !== '') {
+      setDisplayAddress(`${address.substr(0, 6)}...${address.substr(38, 4)}`)
+    }
+  }, [address])
+
   const disconnect = () => {
     window.localStorage.removeItem('WEB3_CONNECT_CACHED_PROVIDER')
     window.location.reload()
@@ -203,10 +210,10 @@ const Home: NextPage = () => {
               Connect
             </Button>
           )}
-          {address !== '' && (
+          {displayAddress !== '' && (
             <>
               <Box p={8}>
-                <Heading as='h3'>{ens !== '' ? ens : address}</Heading>
+                <Heading as='h3'>{ens !== '' ? ens : displayAddress}</Heading>
                 <Link onClick={disconnect} color={'gray.500'}>
                   (Disconnect)
                 </Link>
