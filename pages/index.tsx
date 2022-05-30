@@ -131,9 +131,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (address !== '') {
-      setDisplayAddress(
-        `${address.substring(0, 6)}...${address.substring(38, 4)}`
-      )
+      setDisplayAddress(`${address.substring(0, 6)}...${address.substring(38)}`)
     }
   }, [address])
 
