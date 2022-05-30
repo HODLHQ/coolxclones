@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   Box,
   Button,
+  Flex,
   Heading,
   Link,
   NumberInput,
@@ -14,12 +15,14 @@ import {
   NumberDecrementStepper,
   Spinner,
   Text,
-  useBreakpointValue
+  useBreakpointValue,
+  Center
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import WalletLink from 'walletlink'
+import { ccAbi, cxAbi, erc721Abi } from '../artifacts/abis'
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID
 const cacheProvider = true
@@ -110,6 +113,75 @@ const Home: NextPage = () => {
   }, [web3Modal, address, isConnecting, connect])
 
   useEffect(() => {
+    const checkEns = async () => {
+      const ensName = await provider?.lookupAddress(address)
+      if (ensName && ensName !== '') {
+        setEns(ensName)
+      }
+    }
+    if (isMainnet && provider && address !== '' && ens === '') {
+      checkEns()
+    }
+  }, [isMainnet, address, ens, provider])
+
+  useEffect(() => {
+    const total = mintPriceEther * desiredQuantity
+    setTotalPrice(total.toFixed(1))
+  }, [desiredQuantity])
+
+  useEffect(() => {
+    if (address !== '') {
+      setDisplayAddress(
+        `${address.substring(0, 6)}...${address.substring(38, 4)}`
+      )
+    }
+  }, [address])
+
+  const checkCX = useCallback(async () => {
+    try {
+      const cx = new ethers.Contract(
+        '0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b',
+        cxAbi,
+        provider
+      )
+      const balance = await cx.balanceOf(`${address}`)
+      return Boolean(balance > 0)
+    } catch (_e) {
+      return false
+    }
+  }, [address, provider])
+
+  const checkCC = useCallback(async () => {
+    try {
+      const cc = new ethers.Contract(
+        '0x1a92f7381b9f03921564a437210bb9396471050c',
+        ccAbi,
+        provider
+      )
+      const balance = await cc.balanceOf(`${address}`)
+      return Boolean(balance > 0)
+    } catch (_e) {
+      return false
+    }
+  }, [address, provider])
+
+  useEffect(() => {
+    const checkCXCC = () => {
+      const cx = checkCX()
+      const cc = checkCC()
+      Promise.all([cx, cc]).then((response) => {
+        if (response[0] || response[1]) {
+          setMaxMint(10)
+        }
+      })
+    }
+
+    if (address !== '' && isMainnet && provider) {
+      checkCXCC()
+    }
+  }, [address, provider, isMainnet, checkCX, checkCC])
+
+  useEffect(() => {
     if (instance) {
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length) {
@@ -140,29 +212,6 @@ const Home: NextPage = () => {
     }
   }, [instance])
 
-  useEffect(() => {
-    const checkEns = async () => {
-      const ensName = await provider?.lookupAddress(address)
-      if (ensName && ensName !== '') {
-        setEns(ensName)
-      }
-    }
-    if (isMainnet && provider && address !== '' && ens === '') {
-      checkEns()
-    }
-  }, [isMainnet, address, ens, provider])
-
-  useEffect(() => {
-    const total = mintPriceEther * desiredQuantity
-    setTotalPrice(total.toFixed(1))
-  }, [desiredQuantity])
-
-  useEffect(() => {
-    if (address !== '') {
-      setDisplayAddress(`${address.substr(0, 6)}...${address.substr(38, 4)}`)
-    }
-  }, [address])
-
   const disconnect = () => {
     window.localStorage.removeItem('WEB3_CONNECT_CACHED_PROVIDER')
     window.location.reload()
@@ -184,7 +233,11 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <Box display={'flex'} minHeight={'100vh'} flexDirection={'column'}>
+      <Box
+        display={'flex'}
+        minHeight={'100vh'}
+        flexDirection={'column'}
+        justifyContent={'space-between'}>
         <Box position='relative'>
           <Image
             src={headerSrc as string}
@@ -218,6 +271,7 @@ const Home: NextPage = () => {
                   (Disconnect)
                 </Link>
               </Box>
+              {maxMint === 10 && <Text>🐱x🧬 (Bonus Max Mint)</Text>}
               <Box maxWidth='100px' mx={'auto'} textAlign={'center'} py={8}>
                 <NumberInput
                   step={1}
@@ -242,8 +296,30 @@ const Home: NextPage = () => {
             </>
           )}
         </Box>
-        <Box textAlign={'center'} mt={20}>
-          <Image src='/footer.png' alt='' width={1380} height={500} />
+        <Flex
+          maxWidth={'container.lg'}
+          mx={'auto'}
+          alignContent={'center'}
+          py={10}>
+          <Box flex={3}>
+            <Text>Supply: 10,000</Text>
+            <Text>Mint: 0.1 eth</Text>
+          </Box>
+          <Box flex={1}></Box>
+          <Box flex={3}>
+            <Text>Cool Cat & Clone X NFTs raffled every 1,000 vials sold.</Text>
+            <Text>
+              Vials hold derivative artwork with combined traits (🐱x🧬).
+            </Text>
+          </Box>
+        </Flex>
+        <Box
+          textAlign={'center'}
+          mt={10}
+          maxWidth={'container.xl'}
+          mx={'auto'}
+          lineHeight={0}>
+          <Image src='/footer.png' alt='' width={1920} height={696} />
         </Box>
       </Box>
     </>
