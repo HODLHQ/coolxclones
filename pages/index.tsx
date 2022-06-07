@@ -268,7 +268,7 @@ const Home: NextPage = () => {
         />
         <meta
           name='twitter:description'
-          content='Mint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fwww.coolxclones.xyz'
+          content='Mint yours free for a little bit of luck and follow @coolXclones for the latest alpha! https://coolxclones.xyz'
         />
         <meta
           name='twitter:image'
