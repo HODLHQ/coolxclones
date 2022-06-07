@@ -259,6 +259,21 @@ const Home: NextPage = () => {
           content='Cool x Clones presents the King of Cool x Clone Free Mint'
         />
         <link rel='icon' href='/favicon.ico' />
+        <meta name='twitter:card' content='summary_large_image' />
+        <meta name='twitter:site' content='@coolxclones' />
+        <meta name='twitter:creator' content='@coolxclones' />
+        <meta
+          name='twitter:title'
+          content='I am the King of Cool x Clones 👑'
+        />
+        <meta
+          name='twitter:description'
+          content='Mint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fwww.coolxclones.xyz'
+        />
+        <meta
+          name='twitter:image'
+          content='https://www.coolxclones.xyz/kingofcoolxclones.jpg'
+        />
       </Head>
 
       <Box
@@ -354,7 +369,7 @@ const Home: NextPage = () => {
                     ) : (
                       <Link
                         href={
-                          'https://twitter.com/intent/tweet?text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%0A%0AMint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fwww.coolxclones.xyz%0A%0Ahttps%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1533305236445507584%2FDax20Qve_400x400.jpg'
+                          'https://twitter.com/intent/tweet?url=https://coolxclones.xyz&text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%0A%0AMint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0A'
                         }>
                         <Icon as={FaTwitter} /> I am the King of Cool x Clones
                         👑
