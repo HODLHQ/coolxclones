@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app'
 const theme = extendTheme({
   colors: {
     brand: {
+      100: '#00ff25',
       400: '#0097ff',
       900: '#214080'
     }

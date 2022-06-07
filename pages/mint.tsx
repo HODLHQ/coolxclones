@@ -7,20 +7,26 @@ import {
   AlertIcon,
   Box,
   Button,
+  Flex,
   Heading,
+  Image,
   Link,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Spinner,
   Text,
   useBreakpointValue,
-  useToast,
-  Image
+  useToast
 } from '@chakra-ui/react'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import WalletLink from 'walletlink'
-import { honoraryAbi } from '../artifacts/honorary'
+import { ccAbi, cxAbi, erc721Abi, vialsAbi } from '../artifacts/abis'
 
 interface ErrorMessage {
   message: string
@@ -29,22 +35,32 @@ interface ErrorMessage {
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID
 const cacheProvider = true
 
-const Home: NextPage = () => {
+const Mint: NextPage = () => {
   const toast = useToast()
   const [web3Modal, setWeb3Modal] = useState<Web3Modal>()
   const [instance, setInstance] = useState<ethers.providers.Web3Provider>()
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>()
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>()
+  const [vialsContract, setVialsContract] = useState<ethers.Contract>()
   const [address, setAddress] = useState('')
   const [displayAddress, setDisplayAddress] = useState('')
   const [ens, setEns] = useState('')
   const [isMainnet, setIsMainnet] = useState(false)
+  const [isTestnet, setIsTestnet] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [maxMint, setMaxMint] = useState(5)
+  const [desiredQuantity, setDesiredQuantity] = useState(1)
+  const [mintPrice, setMintPrice] = useState('0.0')
+  const [totalPrice, setTotalPrice] = useState('0.1')
+  const [totalItems, setTotalItems] = useState(0)
+  const [towardsPrize, setTowardsPrize] = useState('0.05')
+  const [amountMinted, setAmountMinted] = useState(0)
+  const [blockExplorer, setBlockExplorer] = useState('')
   const [txHash, setTxHash] = useState('')
   const [isMinting, setIsMinting] = useState(false)
   const [errorDisplay, setErrorDisplay] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [isKing, setIsKing] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
 
   useEffect(() => {
     if (errorMessage !== '') {
@@ -71,14 +87,15 @@ const Home: NextPage = () => {
               options: {
                 infuraId,
                 rpc: {
-                  1: `https://mainnet.infura.io/v3/${infuraId}`
+                  1: `https://mainnet.infura.io/v3/${infuraId}`,
+                  4: `https://rinkeby.infura.io/v3/${infuraId}`
                 }
               }
             },
             walletlink: {
               package: WalletLink,
               options: {
-                appName: 'Cool x Clones',
+                appName: 'Cool X Clones',
                 infuraId
               }
             }
@@ -101,32 +118,15 @@ const Home: NextPage = () => {
       const aAddress = await aSigner.getAddress()
       const network = await aProvider.getNetwork()
       const mainnet = Boolean(network.chainId === 1)
+      const testnet = Boolean(network.chainId === 4)
       setInstance(aInstance)
       setProvider(aProvider)
       setSigner(aSigner)
       setAddress(aAddress)
       setIsMainnet(mainnet)
+      setIsTestnet(testnet)
     }
   }, [web3Modal])
-
-  useEffect(() => {
-    const isHolder = async () => {
-      const honorary = new ethers.Contract(
-        '0x9c56c03a64ec4d81f549c900fb235b31b1390fe2',
-        honoraryAbi,
-        provider
-      )
-
-      const balance = await honorary.balanceOf(address, 1)
-      if (balance > 0) {
-        setIsKing(true)
-      }
-    }
-
-    if (provider && isMainnet && address !== '') {
-      isHolder()
-    }
-  }, [provider, isMainnet, address])
 
   useEffect(() => {
     const load = async () => {
@@ -157,10 +157,125 @@ const Home: NextPage = () => {
   }, [isMainnet, address, ens, provider])
 
   useEffect(() => {
+    if (provider && (isTestnet || isMainnet)) {
+      const vialsAddress = isMainnet
+        ? ''
+        : '0x7981cba35d6e0deeaecad4e5c0ad3685e4ecf33d'
+      if (vialsAddress !== '') {
+        const vials = new ethers.Contract(vialsAddress, vialsAbi, provider)
+        setVialsContract(vials)
+      }
+    }
+  }, [isTestnet, isMainnet, provider])
+
+  const vialsMinted = useCallback(async () => {
+    if (vialsContract) {
+      const price = await vialsContract.price()
+      setMintPrice(ethers.utils.formatUnits(price, 'ether'))
+      const maxSupply = await vialsContract.maxSupply()
+      setTotalItems(maxSupply)
+      const paused = await vialsContract.paused()
+      setIsPaused(paused)
+    }
+  }, [vialsContract])
+
+  useEffect(() => {
+    const getMinted = async () => {
+      const supply = await vialsContract?.totalSupply()
+      if (supply > 0 && supply !== amountMinted) {
+        setAmountMinted(parseInt(supply))
+      }
+    }
+
+    if (vialsContract && amountMinted) {
+      const interval = setInterval(() => {
+        getMinted()
+      }, 5000)
+
+      return () => clearInterval(interval)
+    }
+  }, [vialsContract, amountMinted])
+
+  useEffect(() => {
+    if (vialsContract) {
+      vialsMinted()
+    }
+  }, [vialsContract, vialsMinted])
+
+  useEffect(() => {
+    const total = parseFloat(mintPrice) * desiredQuantity
+    const prize = total / 2
+    setTotalPrice(total.toFixed(1))
+    setTowardsPrize(prize.toFixed(2))
+  }, [desiredQuantity, mintPrice])
+
+  useEffect(() => {
     if (address !== '') {
       setDisplayAddress(`${address.substring(0, 6)}...${address.substring(38)}`)
     }
   }, [address])
+
+  const checkCX = useCallback(async () => {
+    try {
+      const cx = new ethers.Contract(
+        '0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b',
+        cxAbi,
+        provider
+      )
+      const balance = await cx.balanceOf(`${address}`)
+      return Boolean(balance > 0)
+    } catch (_e) {
+      return false
+    }
+  }, [address, provider])
+
+  const checkCC = useCallback(async () => {
+    try {
+      const cc = new ethers.Contract(
+        '0x1a92f7381b9f03921564a437210bb9396471050c',
+        ccAbi,
+        provider
+      )
+      const balance = await cc.balanceOf(`${address}`)
+      return Boolean(balance > 0)
+    } catch (_e) {
+      return false
+    }
+  }, [address, provider])
+
+  const checkCXCC = useCallback(() => {
+    const cx = checkCX()
+    const cc = checkCC()
+    Promise.all([cx, cc]).then((response) => {
+      if (response[0] || response[1]) {
+        setMaxMint(10)
+      }
+    })
+  }, [checkCX, checkCC])
+
+  const checkTest = useCallback(async () => {
+    const testnetContract = new ethers.Contract(
+      '0xdc77e7bd3bfbc8e3b7f816717bc0af6515960b91',
+      erc721Abi,
+      provider
+    )
+    const balance = await testnetContract.balanceOf(`${address}`)
+    if (balance > 0) {
+      setMaxMint(10)
+    }
+  }, [address, provider])
+
+  useEffect(() => {
+    if (address !== '' && provider) {
+      if (isMainnet) {
+        checkCXCC()
+        setBlockExplorer('https://etherscan.io/tx/')
+      } else if (isTestnet) {
+        checkTest()
+        setBlockExplorer('https://rinkeby.etherscan.io/tx/')
+      }
+    }
+  }, [address, provider, isMainnet, isTestnet, checkCXCC, checkTest])
 
   useEffect(() => {
     if (instance) {
@@ -207,38 +322,27 @@ const Home: NextPage = () => {
     return String(error.message)
   }
 
-  const handleSwitchMainnet = () => {
-    const attemptSwitch = async () => {
-      const wallet = window?.ethereum
-      if (signer && wallet) {
-        try {
-          await wallet.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x1' }]
-          })
-          setIsMainnet(true)
-        } catch (_e) {
-          setIsMainnet(false)
-        }
-      }
-      return false
-    }
-    attemptSwitch()
-  }
-
   const handleMint = async () => {
     setIsMinting(true)
     try {
-      const honorary = new ethers.Contract(
-        '0x9c56c03a64ec4d81f549c900fb235b31b1390fe2',
-        honoraryAbi,
-        signer
-      )
-      const tx = await honorary.freeMint(address)
-      setTxHash(tx.hash)
-      await tx.wait()
+      const vialsAddress = isMainnet
+        ? ''
+        : '0x7981cba35d6e0deeaecad4e5c0ad3685e4ecf33d'
+      const vials = new ethers.Contract(vialsAddress, vialsAbi, signer)
+      // ethers.utils.formatUnits(gas, 'wei')
+      const gas = await provider?.getGasPrice()
+      if (gas) {
+        const gasPrice = gas?.toNumber()
+        console.log(gasPrice)
+
+        const gasOverride = {
+          gasLimit: gasPrice
+        }
+        const tx = await vials.mint(address, desiredQuantity, gasOverride)
+        setTxHash(tx.hash)
+        await tx.wait()
+      }
       setIsMinting(false)
-      setIsKing(true)
     } catch (e) {
       console.log(e)
       setErrorDisplay(JSON.stringify(e, null, 2))
@@ -251,11 +355,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>King of Cool x Clones</title>
-        <meta
-          name='description'
-          content='Cool x Clones presents the King of Cool x Clone Free Mint'
-        />
+        <title>Cool X Clones</title>
+        <meta name='description' content='Cool X Clones' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
@@ -277,46 +378,37 @@ const Home: NextPage = () => {
           textAlign={'center'}
           mx={'auto'}
           maxWidth={'container.md'}>
+          {isTestnet && (
+            <Alert status='warning'>
+              <AlertIcon />
+              You are connected to the Rinkeby Testnet
+            </Alert>
+          )}
           <>
-            <Box mt={8}>
-              <Text>
-                You can right click save or mint the King of Cool x Clones and
-                use him as your PFP
-              </Text>
-              <Image
-                src='/kingofcoolxclones.jpg'
-                alt=''
-                width={256}
-                height={256}
-                borderRadius={'lg'}
-                mx={'auto'}
-                my={8}
+            <Box position='relative' textAlign={'center'} m={8}>
+              <NextImage
+                src='/silhouette.png'
+                alt='?'
+                width={2700}
+                height={836}
               />
-              <Heading as='h3'>👑 King of Cool x Clones 👑</Heading>
             </Box>
-            {address !== '' && !isConnecting && !isMainnet && (
-              <Box my={8} color={'brand.400'}>
-                <Alert status='error' backgroundColor={'white'}>
-                  <AlertIcon />
-                  Please connect to:
-                  <Link onClick={() => handleSwitchMainnet()} sx={{ pl: 2 }}>
-                    Ethereum Mainnet
-                  </Link>
-                  .
-                </Alert>
-              </Box>
-            )}
             {isConnecting && <Spinner size='xl' color='white' />}
+            <Box flex={3}>
+              <Text>
+                {amountMinted} / {totalItems} minted
+              </Text>
+              <Text>{mintPrice} eth per mint</Text>
+              <Text>{maxMint} per transaction</Text>
+            </Box>
             {address === '' && !isConnecting && (
-              <Box my={8}>
-                <Button
-                  size='xl'
-                  bg={'brand.100'}
-                  onClick={() => setIsConnecting(true)}
-                  _hover={{ color: 'brand.100', bg: 'white' }}>
-                  Connect
-                </Button>
-              </Box>
+              <Button
+                size='xl'
+                bg={'brand.400'}
+                onClick={() => setIsConnecting(true)}
+                my={10}>
+                Connect
+              </Button>
             )}
             {displayAddress !== '' && (
               <>
@@ -326,58 +418,53 @@ const Home: NextPage = () => {
                     (Disconnect)
                   </Link>
                 </Box>
-
-                <Box p={2}>
-                  <Text>
-                    While equipped the cool 👽🤴 will boost your luck and
-                    fortune in the space 🍀
-                  </Text>
-                  <Text>
-                    In return you must perform good deeds and share the
-                    positivity 👁‍🗨
-                  </Text>
-                  <Text>1 per wallet</Text>
+                {maxMint === 10 && <Text>🐱x🧬 (Bonus Max Mint)</Text>}
+                <Box maxWidth='100px' mx={'auto'} textAlign={'center'} py={8}>
+                  <NumberInput
+                    step={1}
+                    value={desiredQuantity}
+                    min={1}
+                    max={maxMint}
+                    onChange={(_, num) => setDesiredQuantity(num)}>
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
                 </Box>
 
-                <Box p={8}>
-                  {!isMinting &&
-                    (!isKing ? (
-                      <Button
-                        onClick={handleMint}
-                        size={'xl'}
-                        bg={'brand.100'}
-                        my={10}
-                        _hover={{ color: 'brand.100', bg: 'white' }}>
-                        Mint
-                      </Button>
-                    ) : (
-                      <Link
-                        href={
-                          'https://twitter.com/intent/tweet?text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%20Mint%20yours%20for%20free%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1533305236445507584%2FDax20Qve_400x400.jpg'
-                        }>
-                        Welcome back your majesty 👑
-                      </Link>
-                    ))}
+                <NextImage src='/vial.png' alt='' width={128} height={128} />
+
+                <Box mb={8}>
+                  <Text fontSize='lg'> Total: {totalPrice} eth </Text>
+                  <Text color='gray.500'>({towardsPrize} to prize pool)</Text>
                 </Box>
+
+                <Button
+                  onClick={handleMint}
+                  size={'xl'}
+                  bg={'brand.400'}
+                  disabled={isPaused}
+                  my={10}>
+                  Mint
+                </Button>
 
                 {txHash !== '' && (
                   <Box p={4}>
-                    <Link
-                      href={`https://etherscan.io/tx/${txHash}`}
-                      isExternal={true}>
+                    <Link href={`${blockExplorer}${txHash}`} isExternal={true}>
                       View transaction <ExternalLinkIcon mx='2px' />
                     </Link>
                   </Box>
                 )}
               </>
             )}
-            <Text>
-              Follow us on twitter (
-              <Link href={'https://twitter.com/coolXclones'} isExternal={true}>
-                @coolXclones
-              </Link>
-              ) to keep up with the Cool x Clone alpha.
-            </Text>
+            <Box>
+              <Text>Cool Cat & Clone X NFTs raffled every 1,000 minted.</Text>
+              <Text>
+                Vials hold derivative artwork with combined traits (🐱x🧬).
+              </Text>
+            </Box>
           </>
         </Box>
         <Box
@@ -393,4 +480,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Mint
