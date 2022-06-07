@@ -8,6 +8,7 @@ import {
   Box,
   Button,
   Heading,
+  Icon,
   Link,
   Spinner,
   Text,
@@ -16,6 +17,7 @@ import {
   Image
 } from '@chakra-ui/react'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { FaTwitter } from 'react-icons/fa'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
@@ -280,8 +282,16 @@ const Home: NextPage = () => {
           <>
             <Box mt={8}>
               <Text>
-                You can right click save or mint the King of Cool x Clones and
-                use him as your PFP
+                If you do not own a{' '}
+                <Link
+                  href={'https://twitter.com/coolXclones'}
+                  isExternal={true}>
+                  @coolxclones
+                </Link>{' '}
+                you can mint the @kingofcoolxclones and use it as your hex ready
+                PFP! You can right click save or mint the King of Cool x Clones
+                and use it as your hex ready PFP{' '}
+                <Icon as={FaTwitter} color={'twitter.400'} />
               </Text>
               <Image
                 src='/kingofcoolxclones.jpg'
@@ -329,12 +339,8 @@ const Home: NextPage = () => {
 
                 <Box p={2}>
                   <Text>
-                    While equipped the cool 👽🤴 will boost your luck and
-                    fortune in the space 🍀
-                  </Text>
-                  <Text>
-                    In return you must perform good deeds and share the
-                    positivity 👁‍🗨
+                    While equipped the cool 👽🤴 will bring fortune & luck
+                    within the Cool x Clones ecosystem!
                   </Text>
                   <Text>1 per wallet</Text>
                 </Box>
@@ -355,7 +361,7 @@ const Home: NextPage = () => {
                         href={
                           'https://twitter.com/intent/tweet?text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%20Mint%20yours%20for%20free%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1533305236445507584%2FDax20Qve_400x400.jpg'
                         }>
-                        Welcome back your majesty 👑
+                        <Icon as={FaTwitter} /> Here ye, here ye 👑
                       </Link>
                     ))}
                 </Box>
