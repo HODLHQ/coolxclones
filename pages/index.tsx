@@ -280,7 +280,7 @@ const Home: NextPage = () => {
           mx={'auto'}
           maxWidth={'container.md'}>
           <>
-            <Box mt={8}>
+            <Box mt={8} p={2}>
               <Text>
                 If you do not own a{' '}
                 <Link
@@ -288,10 +288,9 @@ const Home: NextPage = () => {
                   isExternal={true}>
                   @coolxclones
                 </Link>{' '}
-                you can mint the @kingofcoolxclones and use it as your hex ready
-                PFP! You can right click save or mint the King of Cool x Clones
-                and use it as your hex ready PFP{' '}
-                <Icon as={FaTwitter} color={'twitter.400'} />
+                you can right click save the King of Cool x Clones... or if you
+                are a hexagon maxi you can mint! KCXC will give a boost to your
+                web3 luck 🍀 and who knows what other surprises he may bring!
               </Text>
               <Image
                 src='/kingofcoolxclones.jpg'
@@ -338,10 +337,6 @@ const Home: NextPage = () => {
                 </Box>
 
                 <Box p={2}>
-                  <Text>
-                    While equipped the cool 👽🤴 will bring fortune & luck
-                    within the Cool x Clones ecosystem!
-                  </Text>
                   <Text>1 per wallet</Text>
                 </Box>
 
@@ -359,9 +354,10 @@ const Home: NextPage = () => {
                     ) : (
                       <Link
                         href={
-                          'https://twitter.com/intent/tweet?text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%20Mint%20yours%20for%20free%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1533305236445507584%2FDax20Qve_400x400.jpg'
+                          'https://twitter.com/intent/tweet?text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%0A%0AMint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0Ahttps%3A%2F%2Fwww.coolxclones.xyz%0A%0Ahttps%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1533305236445507584%2FDax20Qve_400x400.jpg'
                         }>
-                        <Icon as={FaTwitter} /> Here ye, here ye 👑
+                        <Icon as={FaTwitter} /> I am the King of Cool x Clones
+                        👑
                       </Link>
                     ))}
                 </Box>
