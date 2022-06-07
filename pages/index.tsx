@@ -370,7 +370,8 @@ const Home: NextPage = () => {
                       <Link
                         href={
                           'https://twitter.com/intent/tweet?url=https://coolxclones.xyz&text=I%20am%20the%20King%20of%20Cool%20x%20Clones%20%F0%9F%91%91%0A%0AMint%20yours%20free%20for%20a%20little%20bit%20of%20luck%20and%20follow%20%40coolXclones%20for%20the%20latest%20alpha%21%0A%0A'
-                        }>
+                        }
+                        isExternal={true}>
                         <Icon as={FaTwitter} /> I am the King of Cool x Clones
                         👑
                       </Link>
