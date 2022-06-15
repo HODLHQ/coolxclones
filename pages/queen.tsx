@@ -156,7 +156,8 @@ const Queen: NextPage = () => {
               size={'xl'}
               bg={'brand.100'}
               my={10}
-              _hover={{ color: 'brand.100', bg: 'white' }}>
+              _hover={{ color: 'brand.100', bg: 'white' }}
+              disabled={Boolean(address === '')}>
               Mint
             </Button>
           )}
