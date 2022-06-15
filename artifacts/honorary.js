@@ -118,13 +118,6 @@ export const honoraryAbi = [
     type: 'function'
   },
   {
-    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
-    name: 'freeMint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
     inputs: [
       { internalType: 'address', name: '_to', type: 'address' },
       { internalType: 'string', name: '_uri', type: 'string' }
@@ -145,6 +138,13 @@ export const honoraryAbi = [
     type: 'function'
   },
   {
+    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
+    name: 'kingMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
     inputs: [],
     name: 'name',
     outputs: [{ internalType: 'string', name: '', type: 'string' }],
@@ -156,6 +156,13 @@ export const honoraryAbi = [
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
+    name: 'queenMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function'
   },
   {
