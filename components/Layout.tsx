@@ -1,5 +1,6 @@
 import Wallet from '../components/Wallet'
-import { Box, Link, Text } from '@chakra-ui/react'
+import { Box, Icon, Link, Text } from '@chakra-ui/react'
+import { FaTwitter } from 'react-icons/fa'
 import NextImage from 'next/image'
 import Head from 'next/head'
 
@@ -60,15 +61,14 @@ const Layout = ({ children }: Props) => {
           mx={'auto'}
           lineHeight={0}>
           <Text>
-            Follow us on twitter (
+            <Icon as={FaTwitter} />{' '}
             <Link
-              href={'https://twitter.com/coolXclones'}
-              isExternal={true}
-              color={'gray.800'}
-              textDecoration={'underline'}>
-              @coolXclones
+              href={
+                'https://twitter.com/intent/user?screen_name=coolXclones&original_referer=https://www.coolxclones.xyz'
+              }
+              isExternal={true}>
+              Follow for Cool x Clones alpha!
             </Link>
-            ) to keep up with the Cool x Clone alpha.
           </Text>
           <NextImage src='/footer.png' alt='' width={1920} height={696} />
         </Box>

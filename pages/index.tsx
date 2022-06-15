@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
-import NextImage from 'next/image'
+// import NextImage from 'next/image'
 import NextLink from 'next/link'
-import { Box, Heading, Image, Link, SimpleGrid, Text } from '@chakra-ui/react'
+import { Box, Link, SimpleGrid, Text } from '@chakra-ui/react'
+import { ChakraNextImage } from '../components/ChakraNextImage'
 
 const Home: NextPage = () => {
   return (
@@ -19,39 +20,41 @@ const Home: NextPage = () => {
         <Box>
           <NextLink href='/king'>
             <Link>
-              <Image
-                src='/kingofcoolxclones.jpg'
-                alt=''
-                width={256}
-                height={256}
-                borderRadius={'lg'}
-                mx={'auto'}
-                my={8}
-              />
+              <Box borderRadius='lg' overflow={'hidden'}>
+                <ChakraNextImage
+                  src='/kingofcoolxclones.jpg'
+                  alt='King'
+                  width={256}
+                  height={256}
+                  layout='fill'
+                  objectFit='cover'
+                />
+              </Box>
             </Link>
           </NextLink>
 
           <NextLink href='/king'>
-            <Link>👑 King of Cool x Clones 👑</Link>
+            <Link fontSize={'small'}>👑 King of Cool x Clones 👑</Link>
           </NextLink>
         </Box>
 
         <Box>
           <NextLink href='/queen'>
             <Link>
-              <Image
-                src='/queenofcoolxclones.jpg'
-                alt=''
-                width={256}
-                height={256}
-                borderRadius={'lg'}
-                mx={'auto'}
-                my={8}
-              />
+              <Box borderRadius={'lg'} overflow={'hidden'}>
+                <ChakraNextImage
+                  src='/queenofcoolxclones.jpg'
+                  alt='Queen'
+                  width={256}
+                  height={256}
+                  layout='fill'
+                  objectFit='cover'
+                />
+              </Box>
             </Link>
           </NextLink>
           <NextLink href='/queen'>
-            <Link>👑 Queen of Cool x Clones 👑</Link>
+            <Link fontSize={'small'}>👑 Queen of Cool x Clones 👑</Link>
           </NextLink>
         </Box>
       </SimpleGrid>
