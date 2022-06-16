@@ -133,7 +133,7 @@ const Queen: NextPage = () => {
           </Link>{' '}
           you can right click save the Queen of Cool x Clones... or if you are a
           hexagon maxi you can mint! QCXC will give a boost to your web3 luck 🍀
-          and who knows what other surprises he may bring!
+          and who knows what other surprises she may bring!
         </Text>
         <Box p={2}>
           <Text>1 per wallet</Text>
