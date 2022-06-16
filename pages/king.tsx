@@ -158,7 +158,7 @@ const King: NextPage = () => {
               my={10}
               _hover={{ color: 'brand.100', bg: 'white' }}
               disabled={Boolean(address === '')}>
-              Mint
+              Free Mint
             </Button>
           )}
         </Box>
