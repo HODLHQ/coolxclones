@@ -43,6 +43,22 @@ const Layout = ({ children }: Props) => {
             height={600}
           />
         </Box>
+        <Box style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          margin: "20px"
+        }}>
+          <Link href={'https://hodlhq.xyz'} isExternal={true}>
+          <NextImage
+          src='/hodlhq.png'
+          alt='Hodlhq'
+          width={150}
+          height={50}
+        />
+        </Link>
+        
+        </Box>
+        
         <Box
           flex={1}
           textAlign={'center'}
