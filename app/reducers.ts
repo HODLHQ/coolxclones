@@ -21,6 +21,7 @@ export const appReducer = (state: AppState, action: AppActions): AppState => {
         provider: action.payload.provider,
         signer: action.payload.signer,
         isMainnet: action.payload.isMainnet,
+        isTestnet: action.payload.isTestnet,
         address: action.payload.address,
         isConnecting: false
       }
@@ -54,12 +55,14 @@ export const setConnection = ({
   provider,
   signer,
   isMainnet,
+  isTestnet,
   address
 }: {
   instance: ethers.providers.Web3Provider
   provider: ethers.providers.Web3Provider
   signer: ethers.providers.JsonRpcSigner
   isMainnet: boolean
+  isTestnet: boolean
   address: string
 }): SetConnection => ({
   type: ActionType.SetConnection,
@@ -68,6 +71,7 @@ export const setConnection = ({
     provider,
     signer,
     isMainnet,
+    isTestnet,
     address
   }
 })

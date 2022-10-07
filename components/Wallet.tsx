@@ -26,8 +26,16 @@ const cacheProvider = true
 
 const Wallet = () => {
   const { state, dispatch } = useApp()
-  const { instance, provider, signer, address, ens, isConnecting, isMainnet } =
-    state
+  const {
+    instance,
+    provider,
+    signer,
+    address,
+    ens,
+    isConnecting,
+    isMainnet,
+    isTestnet
+  } = state
 
   const [web3Modal, setWeb3Modal] = React.useState<Web3Modal | null>(null)
   const [displayAddress, setDisplayAddress] = React.useState('')
@@ -67,12 +75,14 @@ const Wallet = () => {
     const address = await signer.getAddress()
     const network = await provider.getNetwork()
     const isMainnet = Boolean(network.chainId === 1)
+    const isTestnet = Boolean(network.chainId === 5)
     dispatch(
       setConnection({
         instance,
         provider,
         signer,
         isMainnet,
+        isTestnet,
         address
       })
     )
@@ -86,7 +96,8 @@ const Wallet = () => {
         }
       }
       const handleChainChanged = (_hexChainId: string) => {
-        window.location.reload()
+        console.log('handleChainChanged()')
+        // window.location.reload()
       }
       const handleConenct = (info: { chainId: number }) => {
         console.log(info)
@@ -171,7 +182,7 @@ const Wallet = () => {
       <>
         {isConnecting && <Spinner size='xl' color='white' />}
 
-        {address !== '' && !isConnecting && !isMainnet && (
+        {address !== '' && !isConnecting && !isMainnet && !isTestnet && (
           <Box my={8} color={'brand.400'}>
             <Alert status='error' backgroundColor={'white'}>
               <AlertIcon />
@@ -180,6 +191,15 @@ const Wallet = () => {
                 Ethereum Mainnet
               </Link>
               .
+            </Alert>
+          </Box>
+        )}
+
+        {address !== '' && !isConnecting && isTestnet && (
+          <Box my={8} color={'brand.700'}>
+            <Alert status='warning' backgroundColor={'white'}>
+              <AlertIcon />
+              You are connected to the Goerli Testnet
             </Alert>
           </Box>
         )}
@@ -199,7 +219,7 @@ const Wallet = () => {
         {displayAddress !== '' && (
           <Box p={8}>
             <Heading as='h3'>{ens !== '' ? ens : displayAddress}</Heading>
-            <Link onClick={disconnect} color={'gray.800'}>
+            <Link onClick={disconnect} color={'brand.700'}>
               (Disconnect)
             </Link>
           </Box>

@@ -20,6 +20,7 @@ export interface SetConnection {
     provider: ethers.providers.Web3Provider
     signer: ethers.providers.JsonRpcSigner
     isMainnet: boolean
+    isTestnet: boolean
     address: string
   }
 }
