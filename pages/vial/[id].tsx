@@ -64,13 +64,19 @@ const Mint: NextPage = () => {
   // display toast error for 4 secs is exists
   useEffect(() => {
     if (errorMessage !== '') {
-      const msg = errorMessage.includes('Ledger device')
+      const err = JSON.stringify(errorMessage)
+      console.log('Failed', err)
+      const msg = err.includes('Ledger device')
         ? 'Is Ledger Locked?'
-        : errorMessage.includes(
+        : err.includes(
             'Ledger device: Condition of use not satisfied (denied by the user?)'
           )
         ? 'Rejected on Ledger Device.'
-        : errorMessage.includes('user rejected transaction')
+        : err.includes('cannot estimate gas')
+        ? 'Unable to estimate gas.'
+        : err.includes('exceeds block gas limit')
+        ? 'Excessive gas error.'
+        : err.includes('user rejected transaction')
         ? 'Transaction Rejected'
         : errorMessage
       toast({
@@ -171,7 +177,6 @@ const Mint: NextPage = () => {
       }
     }
     if (isMainnet && provider && address !== '' && ens === '') {
-      console.log('hi')
       checkEns()
     }
   }, [isMainnet, address, ens, provider])
@@ -262,12 +267,33 @@ const Mint: NextPage = () => {
   const handleMint = async () => {
     setIsMinting(true)
     try {
-      const vialsAddress = isMainnet ? '' : goerliVialsContractAddress
-      const vials = new ethers.Contract(vialsAddress, vialsAbi, signer)
-      const tx = await vials.mint(address, id, desiredQuantity)
+      const vials = new ethers.Contract(
+        goerliVialsContractAddress,
+        vialsAbi,
+        signer
+      )
+      // const gas = await provider?.getGasPrice()
+      // const gas =
+      // if (gas) {
+      //   const gasPrice = gas?.toNumber()
+      //   const gasOverride = {
+      //     gasLimit: gasPrice
+      //   }
+      //   const tx = await vials.mint(address, id, desiredQuantity, gasOverride)
+      //   setTxHash(tx.hash)
+      //   await tx.wait()
+      //   setIsMinting(false)
+      //   console.log('with gas override')
+      // } else {
+      const tx = await vials.mint(address, id, desiredQuantity, {
+        // gasLimit: 111000,
+        value: ethers.utils.parseEther(totalPrice)
+      })
       setTxHash(tx.hash)
       await tx.wait()
       setIsMinting(false)
+      // console.log('without gas override')
+      // }
       liveUpdate()
     } catch (e) {
       console.log(e)
