@@ -43,22 +43,17 @@ const Layout = ({ children }: Props) => {
             height={600}
           />
         </Box>
-        <Box style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          margin: "20px"
-        }}>
+        <Box
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            margin: '20px'
+          }}>
           <Link href={'https://hodlhq.xyz'} isExternal={true}>
-          <NextImage
-          src='/hodlhq.png'
-          alt='Hodlhq'
-          width={150}
-          height={50}
-        />
-        </Link>
-        
+            <NextImage src='/hodlhq.png' alt='Hodlhq' width={150} height={50} />
+          </Link>
         </Box>
-        
+
         <Box
           flex={1}
           textAlign={'center'}
@@ -70,12 +65,7 @@ const Layout = ({ children }: Props) => {
           </>
         </Box>
 
-        <Box
-          textAlign={'center'}
-          mt={10}
-          maxWidth={'container.xl'}
-          mx={'auto'}
-          lineHeight={0}>
+        <Box textAlign={'center'} mt={10} maxWidth={'container.xl'} mx={'auto'}>
           <Text>
             <Icon as={FaTwitter} />{' '}
             <Link
@@ -84,6 +74,14 @@ const Layout = ({ children }: Props) => {
               }
               isExternal={true}>
               Follow for Cool x Clones alpha!
+            </Link>
+          </Text>
+          <Text>
+            Contract:{' '}
+            <Link
+              href='https://etherscan.io/address/0x7b903229b78ff51785b11bebaf297e562ca55bcc#code'
+              isExternal={true}>
+              <a>0x7b903229b78ff51785b11bebaf297e562ca55bcc</a>
             </Link>
           </Text>
           <NextImage src='/footer.png' alt='' width={1920} height={696} />
